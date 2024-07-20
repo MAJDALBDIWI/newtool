@@ -1,46 +1,70 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const textInput = document.getElementById("textInput");
+    const languageSelect = document.getElementById("languageSelect");
+    const startButton = document.getElementById("startButton");
+    const stopButton = document.getElementById("stopButton");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+    const textOutput = document.getElementById("textOutput");
 
-.container {
-    width: 80%;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+    let sentences = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let utterance;
 
-h1 {
-    text-align: center;
-}
+    function updateTextOutput() {
+        if (sentences.length > 0) {
+            const sentence = sentences[currentIndex];
+            textOutput.innerHTML = `<p><strong>Deutsch:</strong> ${sentence}</p>`;
+            const lang = languageSelect.value;
+            translateSentence(sentence, lang).then(translation => {
+                textOutput.innerHTML += `<p><strong>Übersetzung:</strong> ${translation}</p>`;
+            });
+        }
+    }
 
-textarea {
-    width: 100%;
-    height: 150px;
-    margin-bottom: 10px;
-}
+    async function translateSentence(sentence, lang) {
+        const encodedSentence = encodeURIComponent(sentence);
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodedSentence}&langpair=de|${lang}`);
+        const data = await response.json();
+        return data.responseData.translatedText;
+    }
 
-select, button {
-    margin: 5px;
-}
+    function playSentence(sentence) {
+        if (utterance) {
+            window.speechSynthesis.cancel();
+        }
+        utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.lang = 'de-DE'; // German
+        window.speechSynthesis.speak(utterance);
+    }
 
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: #fff;
-    cursor: pointer;
-}
+    startButton.addEventListener("click", function () {
+        sentences = textInput.value.split(".").map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
+        currentIndex = 0;
+        isPlaying = true;
+        updateTextOutput();
+        playSentence(sentences[currentIndex]);
+    });
 
-button:hover {
-    background-color: #0056b3;
-}
+    stopButton.addEventListener("click", function () {
+        window.speechSynthesis.pause();
+        isPlaying = false;
+    });
 
-#textOutput {
-    margin-top: 20px;
-}
+    prevButton.addEventListener("click", function () {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateTextOutput();
+            playSentence(sentences[currentIndex]);
+        }
+    });
+
+    nextButton.addEventListener("click", function () {
+        if (currentIndex < sentences.length - 1) {
+            currentIndex++;
+            updateTextOutput();
+            playSentence(sentences[currentIndex]);
+        }
+    });
+});
