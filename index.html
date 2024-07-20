@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Übersetzungsbeispiel</title>
+    <title>Übersetzungsplattform</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Übersetzungsbeispiel</h1>
-        <div id="text">Dies ist der erste Beispielsatz.</div>
-        <div id="translation">This is the first example sentence.</div>
-        <button id="prev">Vorherige</button>
-        <button id="next">Nächste</button>
-        <button id="stop">Stoppen</button>
-        <button id="resume">Fortsetzen</button>
+        <h1>Übersetzungsplattform für Deutsch</h1>
+        <textarea id="textInput" placeholder="Geben Sie den deutschen Text hier ein..."></textarea>
+        <select id="languageSelect">
+            <option value="ar">Arabisch</option>
+            <option value="tr">Türkisch</option>
+            <option value="uk">Ukrainisch</option>
+        </select>
+        <button id="startButton">Starten</button>
+        <button id="stopButton">Stoppen</button>
+        <button id="prevButton">Vorherige</button>
+        <button id="nextButton">Nächste</button>
+        <div id="textOutput"></div>
     </div>
-
-    <script src="https://unpkg.com/i18next@21.6.3/dist/umd/i18next.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
